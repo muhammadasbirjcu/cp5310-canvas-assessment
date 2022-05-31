@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>CP5310 Assessment 1</title>
+    </head>
+    <body>
+        <!-- <div id="background-guide"></div> -->
+        <canvas id="main-canvas"></canvas>
+
+
+        
+        <style type="text/css">
+            /* clears all padding margin */
+            *{
+                padding:0;
+                margin:0;
+                box-sizing: border-box;
+            }
+            #main-canvas{
+                height: 100%;
+                width: 100%;
+                border:0px none;
+                display: block;
+
+                position: relative;
+                z-index: 9;
+            }
+            #background-guide{
+                background: url(guide.png) center center no-repeat;
+                position: fixed;
+                top:0;
+                left:0;
+                width: 100%;
+                height: 100%;
+            }
+            
+        </style>
+        <script>
+            // set the default value
+            const defaultValues = {
+                circle: {
+                    radius: 7,
+                    fillColor: '#000'
+                },
+                line: {
+                    width: 7
+                }
+            }
+
+            const lastCoordinate = {
+                x: null, y: null
+            }
+
+            function plotCircle(context, centreX, centreY)
+            {
+                lastCoordinate.x = centreX;
+                lastCoordinate.y = centreY;
+                context.beginPath();
+                context.arc(centreX, centreY, defaultValues.circle.radius, 0, 2*Math.PI);
+                context.fillStyle = defaultValues.circle.fillColor;
+                context.fill();
+            }
+
+            function drawLine(context, startX, startY, endX, endY)
+            {
+                context.beginPath();
+
+                // create the line
+                context.moveTo(startX, startY);
+                context.lineTo(endX, endY);
+                context.lineWidth = defaultValues.line.width;
+                context.strokeStyle = createGradient(context, startX, startY, endX, endY);
+                context.stroke();
+            }
+
+            function createGradient(context, startX, startY, endX, endY)
+            {
+                const grad = context.createLinearGradient(startX, startY, endX, endY);
+                grad.addColorStop(0, "blue");
+                grad.addColorStop(0.5, "red");
+                grad.addColorStop(1, "yellow");
+                return grad;
+            }
+
+            const canvas = document.getElementById("main-canvas");
+            const canvasContext = canvas.getContext('2d');
+
+            // this part make sure the canvas covers the whole viewport/window
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const points = [               
+                {x: 655, y: 351},
+                {x: 715, y: 378},
+                {x: 735, y: 408},
+                {x: 750, y: 413},
+                {x: 778, y: 395},
+                {x: 781, y: 407},
+                {x: 758, y: 426},
+                {x: 737, y: 427},
+                {x: 737, y: 448},
+                {x: 733, y: 514},
+                {x: 728, y: 556},
+                {x: 728, y: 630},
+                {x: 729, y: 660},
+                {x: 661, y: 659},
+                {x: 663, y: 622},
+                {x: 654, y: 603},
+                {x: 638, y: 587},
+                {x: 551, y: 583},
+                {x: 530, y: 592},
+                {x: 518, y: 602},
+                {x: 517, y: 620},
+                {x: 512, y: 647},
+                {x: 507, y: 663},
+                {x: 447, y: 658},
+                {x: 439, y: 648},
+                {x: 439, y: 613},
+                {x: 439, y: 564},
+                {x: 400, y: 585},
+                {x: 347, y: 591},
+                {x: 299, y: 572},
+                {x: 270, y: 525},
+                {x: 260, y: 459}
+            ];
+
+            for(var i in points){
+                plotCircle(canvasContext, points[i].x, points[i].y);
+                if(i > 0){
+                    drawLine(canvasContext, points[i-1].x, points[i-1].y, points[i].x, points[i].y);
+                }
+                
+            }
+
+            // listen to clicks
+            // canvas.addEventListener("click", function(event) {
+            //     if(lastCoordinate.x == null){
+            //         plotCircle(canvasContext, event.offsetX, event.offsetY);
+            //     }else{
+            //         drawLine(canvasContext, lastCoordinate.x, lastCoordinate.y, event.offsetX, event.offsetY);
+            //         plotCircle(canvasContext, event.offsetX, event.offsetY);
+            //     }
+            //     console.log(lastCoordinate);
+            // });
+            
+            // plotCircle(canvasContext, 7, 7);
+            // drawLine(canvasContext, 7, 7, 40, 40);
+            // plotCircle(canvasContext, 40, 40);
+            // drawLine(canvasContext, 40, 40, 40, 60);
+
+
+        </script>
+    </body>
+</html>
