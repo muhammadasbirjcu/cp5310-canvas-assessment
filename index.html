@@ -145,12 +145,12 @@
 
             // this part make sure the canvas covers the whole viewport/window
             canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
 
             for(var i in points){
                 plotCircle(canvasContext, points[i].x, points[i].y);
                 if(i > 0){
                     drawLine(canvasContext, points[i-1].x, points[i-1].y, points[i].x, points[i].y);
+            canvas.height = window.innerHeight - toolbarHeight;
                 }
                 
             }
