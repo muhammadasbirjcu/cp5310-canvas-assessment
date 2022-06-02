@@ -168,6 +168,9 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight - toolbarHeight;
 
+            // draw pointCoordinates
+            drawPoints(pointCoordinates);
+
             // bind listeners
             document.getElementById("save-file").addEventListener("click", function(event) {
                 saveToFile(pointCoordinates);
