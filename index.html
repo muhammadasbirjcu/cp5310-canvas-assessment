@@ -140,17 +140,22 @@
                 return grad;
             }
 
+
+            function drawPoints(points)
+            {
+                for(var i in pointCoordinates){
+                    plotCircle(canvasContext, pointCoordinates[i].x, pointCoordinates[i].y);
+                    if(i > 0){
+                        drawLine(canvasContext, pointCoordinates[i-1].x, pointCoordinates[i-1].y, pointCoordinates[i].x, pointCoordinates[i].y);
+                    }
+                }
+            }
             const canvas = document.getElementById("main-canvas");
             const canvasContext = canvas.getContext('2d');
 
             // this part make sure the canvas covers the whole viewport/window
             var toolbarHeight = 50;
             canvas.width = window.innerWidth;
-
-            for(var i in points){
-                plotCircle(canvasContext, points[i].x, points[i].y);
-                if(i > 0){
-                    drawLine(canvasContext, points[i-1].x, points[i-1].y, points[i].x, points[i].y);
             canvas.height = window.innerHeight - toolbarHeight;
                 }
                 
