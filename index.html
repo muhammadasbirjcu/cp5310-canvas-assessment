@@ -74,6 +74,41 @@
                 x: null, y: null
             }
 
+            const pointCoordinates = [               
+                {x: 655, y: 351},
+                {x: 715, y: 378},
+                {x: 735, y: 408},
+                {x: 750, y: 413},
+                {x: 778, y: 395},
+                {x: 781, y: 407},
+                {x: 758, y: 426},
+                {x: 737, y: 427},
+                {x: 737, y: 448},
+                {x: 733, y: 514},
+                {x: 728, y: 556},
+                {x: 728, y: 630},
+                {x: 729, y: 660},
+                {x: 661, y: 659},
+                {x: 663, y: 622},
+                {x: 654, y: 603},
+                {x: 638, y: 587},
+                {x: 551, y: 583},
+                {x: 530, y: 592},
+                {x: 518, y: 602},
+                {x: 517, y: 620},
+                {x: 512, y: 647},
+                {x: 507, y: 663},
+                {x: 447, y: 658},
+                {x: 439, y: 648},
+                {x: 439, y: 613},
+                {x: 439, y: 564},
+                {x: 400, y: 585},
+                {x: 347, y: 591},
+                {x: 299, y: 572},
+                {x: 270, y: 525},
+                {x: 260, y: 459}
+            ];
+
             function plotCircle(context, centreX, centreY)
             {
                 lastCoordinate.x = centreX;
@@ -111,41 +146,6 @@
             // this part make sure the canvas covers the whole viewport/window
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-
-            const points = [               
-                {x: 655, y: 351},
-                {x: 715, y: 378},
-                {x: 735, y: 408},
-                {x: 750, y: 413},
-                {x: 778, y: 395},
-                {x: 781, y: 407},
-                {x: 758, y: 426},
-                {x: 737, y: 427},
-                {x: 737, y: 448},
-                {x: 733, y: 514},
-                {x: 728, y: 556},
-                {x: 728, y: 630},
-                {x: 729, y: 660},
-                {x: 661, y: 659},
-                {x: 663, y: 622},
-                {x: 654, y: 603},
-                {x: 638, y: 587},
-                {x: 551, y: 583},
-                {x: 530, y: 592},
-                {x: 518, y: 602},
-                {x: 517, y: 620},
-                {x: 512, y: 647},
-                {x: 507, y: 663},
-                {x: 447, y: 658},
-                {x: 439, y: 648},
-                {x: 439, y: 613},
-                {x: 439, y: 564},
-                {x: 400, y: 585},
-                {x: 347, y: 591},
-                {x: 299, y: 572},
-                {x: 270, y: 525},
-                {x: 260, y: 459}
-            ];
 
             for(var i in points){
                 plotCircle(canvasContext, points[i].x, points[i].y);
