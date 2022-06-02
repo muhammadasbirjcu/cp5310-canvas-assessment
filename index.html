@@ -140,6 +140,10 @@
                 return grad;
             }
 
+            function saveToFile(points)
+            {
+                location.href = "data:application/octet-stream," + encodeURIComponent(JSON.stringify(points));
+            }
 
             function drawPoints(points)
             {
@@ -157,6 +161,11 @@
             var toolbarHeight = 50;
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight - toolbarHeight;
+
+            // bind listeners
+            document.getElementById("save-file").addEventListener("click", function(event) {
+                saveToFile(pointCoordinates);
+            });
                 }
                 
             }
