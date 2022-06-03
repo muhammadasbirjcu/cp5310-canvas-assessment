@@ -16,7 +16,7 @@
         <div class="vh-100">
             <div id="toolbar" class="bg-primary bg-gradient px-3 py-2" style="height:50px">
                 <div class="btn-group">
-                    <button id="load-file" class="btn btn-light btn-sm"><i class="fa-solid fa-file"></i> Load</button>
+                    <label for="load-file-input" id="load-file" class="btn btn-light btn-sm"><i class="fa-solid fa-file"></i> Load</label>
                     <button id="save-file" class="btn btn-light btn-sm"><i class="fa-solid fa-floppy-disk"></i> Save</button>
                 </div>
 
@@ -25,6 +25,8 @@
                     <button id="play-animation" class="btn btn-light btn-sm"><i class="fa-solid fa-play"></i> Play Animation</button>
                     <button id="stop-animation" class="btn btn-light btn-sm"><i class="fa-solid fa-stop"></i> Play Animation</button>
                 </div>
+
+                <input type="file" id="load-file-input" class="d-none">
             </div>
             <!-- <div id="background-guide"></div> -->
             <canvas id="main-canvas"></canvas>
@@ -74,40 +76,7 @@
                 x: null, y: null
             }
 
-            const pointCoordinates = [               
-                {x: 655, y: 351},
-                {x: 715, y: 378},
-                {x: 735, y: 408},
-                {x: 750, y: 413},
-                {x: 778, y: 395},
-                {x: 781, y: 407},
-                {x: 758, y: 426},
-                {x: 737, y: 427},
-                {x: 737, y: 448},
-                {x: 733, y: 514},
-                {x: 728, y: 556},
-                {x: 728, y: 630},
-                {x: 729, y: 660},
-                {x: 661, y: 659},
-                {x: 663, y: 622},
-                {x: 654, y: 603},
-                {x: 638, y: 587},
-                {x: 551, y: 583},
-                {x: 530, y: 592},
-                {x: 518, y: 602},
-                {x: 517, y: 620},
-                {x: 512, y: 647},
-                {x: 507, y: 663},
-                {x: 447, y: 658},
-                {x: 439, y: 648},
-                {x: 439, y: 613},
-                {x: 439, y: 564},
-                {x: 400, y: 585},
-                {x: 347, y: 591},
-                {x: 299, y: 572},
-                {x: 270, y: 525},
-                {x: 260, y: 459}
-            ];
+            var pointCoordinates = [];
 
             function plotCircle(context, centreX, centreY)
             {
@@ -145,12 +114,66 @@
                 location.href = "data:application/octet-stream," + encodeURIComponent(JSON.stringify(points));
             }
 
+            function initLoadFile()
+            {
+                const fileInput = document.getElementById('load-file-input');
+                fileInput.addEventListener('change', (event) => {
+                    if(pointCoordinates.length > 0){
+                        // confirm is user want to load
+                        const confirmed = confirm("Loading a new file will overwrite your current work. Proceed?");
+                        if(!confirmed) return; // terminate
+                    }
+                    const fileList = event.target.files;
+                    // if any file is selected
+                    if(fileList && fileList.length > 0){
+                        const loadedFile = fileList[0];
+
+                        // check file type
+                        if (loadedFile.type && loadedFile.type.toLowerCase() == 'application/json') {
+                            // if the selected file is json, load file content
+                            loadPointsFromFile(loadedFile);
+                        }else{
+                            alert("Invalid file type!");
+                            return;
+                        }
+                    }
+                });
+            }
+
+            function loadPointsFromFile(file)
+            {
+                const reader = new FileReader();
+                reader.addEventListener('load', (event) => {
+                    var jsonData = [];
+                    try{
+                        jsonData = JSON.parse(event.target.result);
+                        if (!Array.isArray(jsonData)) throw "Json data is not array";
+                        // validate each item in array
+                        for(var i in jsonData){
+                            if(jsonData[i].hasOwnProperty('x') && jsonData[i].hasOwnProperty('y')){
+                                // valid structure
+                            }else{
+                                throw "Invalid data structure at item " + i;
+                            }
+                        }
+                    }catch(err){
+                        alert(err);
+                    }
+
+                    // assign to points
+                    pointCoordinates = jsonData;
+                    clearCanvas(canvasContext, canvas);
+                    drawPoints(pointCoordinates);
+                });
+                reader.readAsText(file);
+            }
+
             function drawPoints(points)
             {
-                for(var i in pointCoordinates){
-                    plotCircle(canvasContext, pointCoordinates[i].x, pointCoordinates[i].y);
+                for(var i in points){
+                    plotCircle(canvasContext, points[i].x, points[i].y);
                     if(i > 0){
-                        drawLine(canvasContext, pointCoordinates[i-1].x, pointCoordinates[i-1].y, pointCoordinates[i].x, pointCoordinates[i].y);
+                        drawLine(canvasContext, points[i-1].x, points[i-1].y, points[i].x, points[i].y);
                     }
                 }
             }
@@ -168,35 +191,34 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight - toolbarHeight;
 
+            // handles load file
+            initLoadFile();
+
             // draw pointCoordinates
             drawPoints(pointCoordinates);
 
             // bind listeners
+            // on clicks of save file
             document.getElementById("save-file").addEventListener("click", function(event) {
                 saveToFile(pointCoordinates);
             });
+            // on clicks of clear canvas
             document.getElementById("clear-canvas").addEventListener("click", function(event) {
                 if(confirm("Are you sure you want to clear?")){
                     clearCanvas(canvasContext, canvas);
                 }
             });
-
-            // listen to clicks
-            // canvas.addEventListener("click", function(event) {
-            //     if(lastCoordinate.x == null){
-            //         plotCircle(canvasContext, event.offsetX, event.offsetY);
-            //     }else{
-            //         drawLine(canvasContext, lastCoordinate.x, lastCoordinate.y, event.offsetX, event.offsetY);
-            //         plotCircle(canvasContext, event.offsetX, event.offsetY);
-            //     }
-            //     console.log(lastCoordinate);
-            // });
+            // on clicks in canvas
+            canvas.addEventListener("click", function(event) {
+                pointCoordinates.push({x:event.offsetX, y:event.offsetY});
+                if(lastCoordinate.x == null){
+                    plotCircle(canvasContext, event.offsetX, event.offsetY);
+                }else{
+                    drawLine(canvasContext, lastCoordinate.x, lastCoordinate.y, event.offsetX, event.offsetY);
+                    plotCircle(canvasContext, event.offsetX, event.offsetY);
+                }
+            });
             
-            // plotCircle(canvasContext, 7, 7);
-            // drawLine(canvasContext, 7, 7, 40, 40);
-            // plotCircle(canvasContext, 40, 40);
-            // drawLine(canvasContext, 40, 40, 40, 60);
-
 
         </script>
     </body>
