@@ -14,14 +14,20 @@
     </head>
     <body>
         <div class="vh-100">
-            <div id="toolbar" class="bg-primary bg-gradient px-3 py-2" style="height:50px">
-                <div class="btn-group">
+            <div id="toolbar" class="bg-primary bg-gradient px-3 py-2 d-block d-md-flex" style="height:50px">
+                <div class="btn-group me-md-3" style="flex:0 0 150px">
                     <label for="load-file-input" id="load-file" class="btn btn-light btn-sm"><i class="fa-solid fa-file"></i> Load</label>
                     <button id="save-file" class="btn btn-light btn-sm"><i class="fa-solid fa-floppy-disk"></i> Save</button>
                 </div>
 
-                <div class="btn-group">
+                <div class="btn-group" style="flex:0 0 150px">
                     <button id="clear-canvas" class="btn btn-light btn-sm"><i class="fa-solid fa-eraser"></i> Clear</button>
+                </div>
+
+                <div class="btn-group" style="flex:1 1 100px">
+                </div>
+
+                <div class="btn-group" style="flex:0 0 200px">
                     <button id="play-animation" class="btn btn-light btn-sm"><i class="fa-solid fa-play"></i> Play Animation</button>
                     <button id="stop-animation" class="btn btn-light btn-sm"><i class="fa-solid fa-stop"></i> Play Animation</button>
                 </div>
@@ -162,18 +168,17 @@
 
                     // assign to points
                     pointCoordinates = jsonData;
-                    clearCanvas(canvasContext, canvas);
-                    drawPoints(pointCoordinates);
+                    redrawPoints(canvasContext, canvas, pointCoordinates);
                 });
                 reader.readAsText(file);
             }
 
-            function drawPoints(points)
+            function drawPoints(context, points)
             {
                 for(var i in points){
-                    plotCircle(canvasContext, points[i].x, points[i].y);
+                    plotCircle(context, points[i].x, points[i].y);
                     if(i > 0){
-                        drawLine(canvasContext, points[i-1].x, points[i-1].y, points[i].x, points[i].y);
+                        drawLine(context, points[i-1].x, points[i-1].y, points[i].x, points[i].y);
                     }
                 }
             }
@@ -181,6 +186,12 @@
             function clearCanvas(context, canvas)
             {
                 context.clearRect(0, 0, canvas.width, canvas.height);
+            }
+
+            function redrawPoints(context, canvas, points)
+            {
+                clearCanvas(context, canvas);
+                drawPoints(context, points);
             }
 
             const canvas = document.getElementById("main-canvas");
@@ -195,7 +206,7 @@
             initLoadFile();
 
             // draw pointCoordinates
-            drawPoints(pointCoordinates);
+            redrawPoints(canvasContext, canvas, pointCoordinates);
 
             // bind listeners
             // on clicks of save file
