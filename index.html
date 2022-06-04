@@ -79,16 +79,10 @@
                 }
             }
 
-            const lastCoordinate = {
-                x: null, y: null
-            }
-
             var pointCoordinates = [];
 
             function plotCircle(context, centreX, centreY)
             {
-                lastCoordinate.x = centreX;
-                lastCoordinate.y = centreY;
                 context.beginPath();
                 context.arc(centreX, centreY, defaultValues.circle.radius, 0, 2*Math.PI);
                 context.fillStyle = defaultValues.circle.fillColor;
@@ -202,6 +196,13 @@
                 redrawPoints(content, canvas, points);
             }
 
+            function lastCoordinate()
+            {
+                return pointCoordinates.length > 0 ? 
+                    pointCoordinates[pointCoordinates.length - 1] : 
+                    null;
+            }
+
             const canvas = document.getElementById("main-canvas");
             const canvasContext = canvas.getContext('2d');
 
@@ -233,12 +234,15 @@
             });
             // on clicks in canvas
             canvas.addEventListener("click", function(event) {
+                const prevLastCoordinate = lastCoordinate();
                 pointCoordinates.push({x:event.offsetX, y:event.offsetY});
-                if(lastCoordinate.x == null){
-                    plotCircle(canvasContext, event.offsetX, event.offsetY);
+                const newLastCoordinate = lastCoordinate();
+                
+                if(prevLastCoordinate == null){
+                    plotCircle(canvasContext, newLastCoordinate.x, newLastCoordinate.y);
                 }else{
-                    drawLine(canvasContext, lastCoordinate.x, lastCoordinate.y, event.offsetX, event.offsetY);
-                    plotCircle(canvasContext, event.offsetX, event.offsetY);
+                    drawLine(canvasContext, prevLastCoordinate.x, prevLastCoordinate.y, newLastCoordinate.x, newLastCoordinate.y);
+                    plotCircle(canvasContext, newLastCoordinate.x, newLastCoordinate.y);
                 }
             });
             
