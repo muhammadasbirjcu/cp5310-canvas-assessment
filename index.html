@@ -81,6 +81,9 @@
 
             var pointCoordinates = [];
 
+            // variables
+            const canvas = document.getElementById("main-canvas");
+            const canvasContext = canvas.getContext('2d');
             function plotCircle(context, centreX, centreY)
             {
                 context.beginPath();
@@ -203,8 +206,6 @@
                     null;
             }
 
-            const canvas = document.getElementById("main-canvas");
-            const canvasContext = canvas.getContext('2d');
 
             // this part make sure the canvas covers the whole viewport/window
             var toolbarHeight = 50;
