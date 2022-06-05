@@ -90,6 +90,11 @@
             var drawIndex = 0;
             var drawInterval = null;
 
+            /**
+             * ---------------------------
+             * BASIC LINE AND CIRCLE DRAW
+             * ---------------------------
+             */
             function plotCircle(context, centreX, centreY)
             {
                 context.beginPath();
@@ -119,6 +124,53 @@
                 return grad;
             }
 
+
+            /**
+             * -----------------------
+             * CANVAS FUNCTIONS
+             * -----------------------
+             */
+            function drawPoints(context, points)
+            {
+                for(var i in points){
+                    plotCircle(context, points[i].x, points[i].y);
+                    if(i > 0){
+                        drawLine(context, points[i-1].x, points[i-1].y, points[i].x, points[i].y);
+                    }
+                }
+            }
+
+            function clearCanvas(context, canvas)
+            {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+            }
+
+            function redrawPoints(context, canvas, points)
+            {
+                clearCanvas(context, canvas);
+                drawPoints(context, points);
+            }
+
+            function undoLastPoint(content, canvas, points)
+            {
+                if(pointCoordinates.length < 1) return;
+                pointCoordinates.pop();
+                redrawPoints(content, canvas, points);
+            }
+
+            function lastCoordinate()
+            {
+                return pointCoordinates.length > 0 ? 
+                    pointCoordinates[pointCoordinates.length - 1] : 
+                    null;
+            }
+
+
+            /**
+             * -----------------------
+             * LOAD AND SAVE TO FILE
+             * -----------------------
+             */
             function saveToFile(points)
             {
                 location.href = "data:application/octet-stream," + encodeURIComponent(JSON.stringify(points));
@@ -177,41 +229,11 @@
                 reader.readAsText(file);
             }
 
-            function drawPoints(context, points)
-            {
-                for(var i in points){
-                    plotCircle(context, points[i].x, points[i].y);
-                    if(i > 0){
-                        drawLine(context, points[i-1].x, points[i-1].y, points[i].x, points[i].y);
-                    }
-                }
-            }
-
-            function clearCanvas(context, canvas)
-            {
-                context.clearRect(0, 0, canvas.width, canvas.height);
-            }
-
-            function redrawPoints(context, canvas, points)
-            {
-                clearCanvas(context, canvas);
-                drawPoints(context, points);
-            }
-
-            function undoLastPoint(content, canvas, points)
-            {
-                if(pointCoordinates.length < 1) return;
-                pointCoordinates.pop();
-                redrawPoints(content, canvas, points);
-            }
-
-            function lastCoordinate()
-            {
-                return pointCoordinates.length > 0 ? 
-                    pointCoordinates[pointCoordinates.length - 1] : 
-                    null;
-            }
-
+            /**
+             * -----------------------
+             * MODES
+             * -----------------------
+             */
             function viewMode(cotext, canvas)
             {
                 // do nothing if mode is already in 'edit' mode
