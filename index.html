@@ -50,8 +50,9 @@
                 box-sizing: border-box;
             }
             #main-canvas{
-                border:0px none;
+                border:3px solid #000;
                 display: block;
+                box-sizing: border-box;
 
                 position: relative;
                 z-index: 9;
@@ -266,8 +267,9 @@
 
             // this part make sure the canvas covers the whole viewport/window
             var toolbarHeight = 50;
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight - toolbarHeight;
+            var borderWidth = 2;
+            canvas.width = window.innerWidth - (borderWidth*3);
+            canvas.height = window.innerHeight - toolbarHeight - (borderWidth*3);
 
             // load from last session - if there's any
             if(localStorage.getItem('canvas_points')){
