@@ -28,10 +28,11 @@
                 <div class="btn-group" style="flex:1 1 100px">
                 </div>
 
-                <div class="btn-group" style="flex:0 0 200px">
-                    <button id="play-animation" class="btn btn-light btn-sm"><i class="fa-solid fa-play"></i> Play Animation</button>
-                    <button id="stop-animation" class="btn btn-light btn-sm"><i class="fa-solid fa-stop"></i> Play Animation</button>
+                <div class="btn-group" style="flex:0 0 150px">
+                    <button id="edit-mode" class="btn btn-light btn-sm"><i class="fa-solid fa-pencil"></i> Edit</button>
+                    <button id="view-mode" class="btn btn-light btn-sm"><i class="fa-solid fa-tv"></i> View</button>
                 </div>
+
 
                 <input type="file" id="load-file-input" class="d-none">
             </div>
@@ -82,6 +83,12 @@
             // variables
             const canvas = document.getElementById("main-canvas");
             const canvasContext = canvas.getContext('2d');
+            const editModeButton = document.getElementById("edit-mode");
+            const viewModeButton = document.getElementById("view-mode");
+            var mode = null;
+            var drawIndex = 0;
+            var drawInterval = null;
+
             function plotCircle(context, centreX, centreY)
             {
                 context.beginPath();
@@ -204,6 +211,58 @@
                     null;
             }
 
+            function viewMode(cotext, canvas)
+            {
+                // do nothing if mode is already in 'edit' mode
+                if(mode == 'view') return; 
+                // toggle button classes
+                editModeButton.classList.remove("btn-dark");
+                viewModeButton.classList.add("btn-dark");
+                mode = 'view';
+
+                // stop any pending animation
+                if(drawInterval) clearInterval(drawInterval);
+
+                // clear canvas
+                clearCanvas(cotext, canvas);
+
+                if(pointCoordinates.length == 0) return;
+
+                // start from beginning
+                drawIndex = 0;
+                drawInterval = setInterval(function(){
+                    // start animation
+                    if(drawIndex < pointCoordinates.length){
+                        plotCircle(canvasContext, pointCoordinates[drawIndex].x, pointCoordinates[drawIndex].y);
+                        if(drawIndex > 0){
+                            drawLine(canvasContext, pointCoordinates[drawIndex-1].x, pointCoordinates[drawIndex-1].y, pointCoordinates[drawIndex].x, pointCoordinates[drawIndex].y);
+                        }
+                        drawIndex++;
+                    }else{
+                        drawIndex = 0;
+                        clearCanvas(cotext, canvas);
+                    }
+                }, 1000);
+            }
+
+            function editMode(cotext, canvas)
+            {
+                // do nothing if mode is already in 'view' mode
+                if(mode == 'edit') return; 
+                // toggle button classes
+                editModeButton.classList.add("btn-dark");
+                viewModeButton.classList.remove("btn-dark");
+                mode = 'edit';
+
+                // stop any pending animation
+                if(drawInterval) clearInterval(drawInterval);
+
+                // clear canvas
+                clearCanvas(cotext, canvas);
+
+                // redraw
+                redrawPoints(canvasContext, canvas, pointCoordinates);
+            }
 
             // this part make sure the canvas covers the whole viewport/window
             var toolbarHeight = 50;
@@ -218,8 +277,8 @@
             // handles load file
             initLoadFile();
 
-            // draw pointCoordinates
-            redrawPoints(canvasContext, canvas, pointCoordinates);
+            // start with edit mode
+            editMode(canvasContext, canvas);
 
             // bind listeners
             // on clicks of save file
@@ -229,6 +288,7 @@
             // on clicks of clear canvas
             document.getElementById("clear-canvas").addEventListener("click", function(event) {
                 if(confirm("Are you sure you want to clear?")){
+                    pointCoordinates = [];
                     clearCanvas(canvasContext, canvas);
                 }
             });
@@ -238,20 +298,31 @@
             });
             // on clicks in canvas
             canvas.addEventListener("click", function(event) {
-                const prevLastCoordinate = lastCoordinate();
-                pointCoordinates.push({x:event.offsetX, y:event.offsetY});
-                const newLastCoordinate = lastCoordinate();
+                if(mode == 'edit'){
+                    const prevLastCoordinate = lastCoordinate();
+                    pointCoordinates.push({x:event.offsetX, y:event.offsetY});
+                    const newLastCoordinate = lastCoordinate();
+                    
+                    if(prevLastCoordinate == null){
+                        plotCircle(canvasContext, newLastCoordinate.x, newLastCoordinate.y);
+                    }else{
+                        drawLine(canvasContext, prevLastCoordinate.x, prevLastCoordinate.y, newLastCoordinate.x, newLastCoordinate.y);
+                        plotCircle(canvasContext, newLastCoordinate.x, newLastCoordinate.y);
+                    }
+                } 
                 
-                if(prevLastCoordinate == null){
-                    plotCircle(canvasContext, newLastCoordinate.x, newLastCoordinate.y);
-                }else{
-                    drawLine(canvasContext, prevLastCoordinate.x, prevLastCoordinate.y, newLastCoordinate.x, newLastCoordinate.y);
-                    plotCircle(canvasContext, newLastCoordinate.x, newLastCoordinate.y);
-                }
             });
             // store unsaved changes to localStorage
             window.addEventListener('beforeunload', function(event) {
                 localStorage.setItem('canvas_points', JSON.stringify(pointCoordinates));
+            });
+
+            // on clicks in canvas
+            editModeButton.addEventListener("click", function(event) {
+                editMode(canvasContext, canvas);
+            });
+            viewModeButton.addEventListener("click", function(event) {
+                viewMode(canvasContext, canvas);
             });
             
 
