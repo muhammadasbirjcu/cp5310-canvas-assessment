@@ -211,6 +211,11 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight - toolbarHeight;
 
+            // load from last session - if there's any
+            if(localStorage.getItem('canvas_points')){
+                pointCoordinates = JSON.parse(localStorage.getItem('canvas_points'));
+            }
+
             // handles load file
             initLoadFile();
 
@@ -244,6 +249,10 @@
                     drawLine(canvasContext, prevLastCoordinate.x, prevLastCoordinate.y, newLastCoordinate.x, newLastCoordinate.y);
                     plotCircle(canvasContext, newLastCoordinate.x, newLastCoordinate.y);
                 }
+            });
+            // store unsaved changes to localStorage
+            window.addEventListener('beforeunload', function(event) {
+                localStorage.setItem('canvas_points', JSON.stringify(pointCoordinates));
             });
             
 
