@@ -81,6 +81,12 @@
 
             var pointCoordinates = [];
 
+            // offset is used in animating the whole drawing
+            var offset = {
+                x: 0,
+                y: 0
+            }
+
             // variables
             const canvas = document.getElementById("main-canvas");
             const canvasContext = canvas.getContext('2d');
@@ -98,7 +104,7 @@
             function plotCircle(context, centreX, centreY)
             {
                 context.beginPath();
-                context.arc(centreX, centreY, defaultValues.circle.radius, 0, 2*Math.PI);
+                context.arc(centreX + offset.x, centreY + offset.y, defaultValues.circle.radius, 0, 2*Math.PI);
                 context.fillStyle = defaultValues.circle.fillColor;
                 context.fill();
             }
@@ -106,18 +112,35 @@
             function drawLine(context, startX, startY, endX, endY)
             {
                 context.beginPath();
-
+                // define start and end coordinates
+                const start = {
+                    x: startX + offset.x,
+                    y: startY + offset.y
+                }
+                const end = {
+                    x: endX + offset.x,
+                    y: endY + offset.y
+                }
                 // create the line
-                context.moveTo(startX, startY);
-                context.lineTo(endX, endY);
+                context.moveTo(start.x, start.y);
+                context.lineTo(end.x, end.y);
                 context.lineWidth = defaultValues.line.width;
-                context.strokeStyle = createGradient(context, startX, startY, endX, endY);
+                context.strokeStyle = createGradient(context, start.x, start.y, end.x, end.y);
                 context.stroke();
             }
 
             function createGradient(context, startX, startY, endX, endY)
             {
-                const grad = context.createLinearGradient(startX, startY, endX, endY);
+                // define start and end coordinates
+                const start = {
+                    x: startX + offset.x,
+                    y: startY + offset.y
+                }
+                const end = {
+                    x: endX + offset.x,
+                    y: endY + offset.y
+                }
+                const grad = context.createLinearGradient(start.x, start.y, end.x, end.y);
                 grad.addColorStop(0, "blue");
                 grad.addColorStop(0.5, "red");
                 grad.addColorStop(1, "yellow");
