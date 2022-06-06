@@ -14,21 +14,21 @@
     </head>
     <body>
         <div class="vh-100">
-            <div id="toolbar" class="bg-primary bg-gradient px-3 py-2 d-block d-md-flex" style="height:50px">
-                <div class="btn-group me-md-3" style="flex:0 0 150px">
+            <div id="toolbar" class="bg-primary bg-gradient px-3 pb-2 d-flex justify-content-center flex-wrap">
+                <div class="btn-group me-3 mt-2" style="flex:0 0 150px">
                     <label for="load-file-input" id="load-file" class="btn btn-light btn-sm"><i class="fa-solid fa-file"></i> Load</label>
                     <button id="save-file" class="btn btn-light btn-sm"><i class="fa-solid fa-floppy-disk"></i> Save</button>
                 </div>
 
-                <div class="btn-group" style="flex:0 0 150px">
+                <div class="btn-group mt-2" style="flex:0 0 150px">
                     <button id="clear-canvas" class="btn btn-light btn-sm"><i class="fa-solid fa-eraser"></i> Clear</button>
                     <button id="undo" class="btn btn-light btn-sm"><i class="fa-solid fa-rotate-left"></i> Undo</button>
                 </div>
 
-                <div class="btn-group" style="flex:1 1 100px">
+                <div class="btn-group d-none mt-2" style="flex:1 1 100px">
                 </div>
 
-                <div class="btn-group" style="flex:0 0 150px">
+                <div class="btn-group mt-2" style="flex:0 0 150px">
                     <button id="edit-mode" class="btn btn-light btn-sm"><i class="fa-solid fa-pencil"></i> Edit</button>
                     <button id="view-mode" class="btn btn-light btn-sm"><i class="fa-solid fa-tv"></i> View</button>
                 </div>
@@ -64,6 +64,9 @@
                 left:0;
                 width: 100%;
                 height: 100%;
+            }
+            #clientHeight{
+                min-height: 50px;
             }
             
         </style>
@@ -353,7 +356,7 @@
             }
 
             // this part make sure the canvas covers the whole viewport/window
-            var toolbarHeight = 50;
+            var toolbarHeight = document.getElementById("toolbar").clientHeight;
             var borderWidth = 2;
             canvas.width = window.innerWidth - (borderWidth*3);
             canvas.height = window.innerHeight - toolbarHeight - (borderWidth*3);
