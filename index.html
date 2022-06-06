@@ -11,6 +11,7 @@
 
         <!-- Fontawesome Icons -->
         <script src="https://kit.fontawesome.com/54ebba3642.js" crossorigin="anonymous"></script>
+        <script src="elephant.js"></script>
     </head>
     <body>
         <div class="vh-100">
@@ -90,7 +91,9 @@
                 }
             }
 
-            var pointCoordinates = [];
+            if(typeof pointCoordinates == "undefined"){
+                var pointCoordinates = [];
+            }
 
             // offset is used in animating the whole drawing
             var offset = {
