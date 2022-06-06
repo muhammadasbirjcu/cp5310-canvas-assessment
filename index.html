@@ -51,6 +51,37 @@
 
                 <input type="file" id="load-file-input" class="d-none">
             </div>
+
+            <!-- Modal For Instruction -->
+            <div class="modal" tabindex="-1" id="instruction-modal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Canvas Draw</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>You can start either by: </p>
+                            <ol>
+                                <li>Clicking on the canvas to create your first dot and click on the next dot and so on.</li>
+                                <li>Select from the list of predrawn drawings from <button class="btn btn-dark btn-sm">Presets</button></li>
+                            </ol>
+
+                            <p>
+                                Save your drawing into a file by clicking <button class="btn btn-dark btn-sm"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+                            </p>
+                            <p>
+                                Load your saved drawing by clicking <button class="btn btn-dark btn-sm"><i class="fa-solid fa-file"></i> Load</button>
+                            </p>
+                            <p>
+                                Click on <button class="btn btn-dark btn-sm"><i class="fa-solid fa-play"></i> Play</button> to animate the drawing
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
             <!-- <div id="background-guide"></div> -->
             <canvas id="main-canvas"></canvas>
         </div>
@@ -408,6 +439,9 @@
             if(localStorage.getItem('stored_points')){
                 pointCoordinates = JSON.parse(localStorage.getItem('stored_points'));
             }
+
+            // display instuction modal 
+            (new bootstrap.Modal('#instruction-modal')).show();
 
             // build presets selector
             buildPresets();
