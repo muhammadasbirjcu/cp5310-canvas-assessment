@@ -9,8 +9,14 @@
         <!-- Bootstrap CSS Framework -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
 
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+
         <!-- Fontawesome Icons -->
         <script src="https://kit.fontawesome.com/54ebba3642.js" crossorigin="anonymous"></script>
+
+        <!-- Preset Files -->
+        <script src="bird.js"></script>
         <script src="elephant.js"></script>
     </head>
     <body>
@@ -28,6 +34,14 @@
 
                 <div class="btn-group mt-2 d-none d-md-inline-block" style="flex:1 1 100px">
                 </div>
+
+                <div class="dropdown mt-2" style="flex:0 0 100px">
+                    <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                      Preset
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" id="presets">
+                    </ul>
+                  </div>
 
                 <div class="btn-group mt-2" style="flex:0 0 150px">
                     <button id="edit-mode" class="btn btn-light btn-sm"><i class="fa-solid fa-pencil"></i> Edit</button>
@@ -60,13 +74,12 @@
             }
 
             #background-guide{
-                background: url(guide.png) center center no-repeat;
+                background: url(bird.png) center center no-repeat;
                 position: fixed;
                 top:0;
                 left:0;
                 width: 100%;
                 height: 100%;
-                background-size: contain;
             }
             #toolbar{
                 position: relative;
@@ -110,6 +123,10 @@
             var drawIndex = 0;
             var drawInterval = null;
             const animationSpeed = 500;
+            const presets = [
+                {name: 'Bird', data: birdCoordinates},
+                {name: 'Elephant', data: elephantCoordinates}
+            ]
 
             /**
              * ---------------------------
@@ -361,6 +378,26 @@
                 redrawPoints(canvasContext, canvas, pointCoordinates);
             }
 
+            function buildPresets()
+            {
+                const presetsDropdown = document.getElementById("presets");
+                for(var i in presets){
+                    presetsDropdown.innerHTML += '<li><a class="dropdown-item preset" href="#preset-' + i + '">' + presets[i].name + '</a></li>'
+                }
+                // listen to clicks
+                presetsDropdown.addEventListener('click', e => {
+                    if (e.target.classList.contains('preset')) {
+                        const presetIndex = parseInt(e.target.getAttribute('href').substr(8));
+                        console.log(presetIndex);
+                        const confirmed = confirm("This will overwrite your current work. Proceed?");
+                        if(!confirmed) return; // terminate
+
+                        pointCoordinates = presets[presetIndex].data;
+                        redrawPoints(canvasContext, canvas, pointCoordinates);
+                    }
+                });
+            }
+
             // this part make sure the canvas covers the whole viewport/window
             var toolbarHeight = document.getElementById("toolbar").clientHeight;
             var borderWidth = 2;
@@ -371,6 +408,9 @@
             if(localStorage.getItem('stored_points')){
                 pointCoordinates = JSON.parse(localStorage.getItem('stored_points'));
             }
+
+            // build presets selector
+            buildPresets();
 
             // handles load file
             initLoadFile();
