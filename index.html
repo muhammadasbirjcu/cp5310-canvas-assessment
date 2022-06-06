@@ -21,6 +21,7 @@
     </head>
     <body>
         <div class="vh-100">
+            <!-- Toolbar -->
             <div id="toolbar" class="bg-primary bg-gradient px-3 pb-2 d-flex justify-content-center flex-wrap">
                 <div class="btn-group me-3 mt-2" style="flex:0 0 150px">
                     <label for="load-file-input" id="load-file" class="btn btn-light btn-sm"><i class="fa-solid fa-file"></i> Load</label>
@@ -83,6 +84,8 @@
 
 
             <!-- <div id="background-guide"></div> -->
+
+            <!-- The actual Canvas -->
             <canvas id="main-canvas"></canvas>
         </div>
 
@@ -135,11 +138,10 @@
                 }
             }
 
-            if(typeof pointCoordinates == "undefined"){
-                var pointCoordinates = [];
-            }
+            // this is where point coordinates are stored
+            var pointCoordinates = [];
 
-            // offset is used in animating the whole drawing
+            // offset is used in moving (animating) the whole drawing
             var offset = {
                 x: 0,
                 y: 0
