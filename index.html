@@ -25,12 +25,12 @@
                     <button id="undo" class="btn btn-light btn-sm"><i class="fa-solid fa-rotate-left"></i> Undo</button>
                 </div>
 
-                <div class="btn-group d-none mt-2" style="flex:1 1 100px">
+                <div class="btn-group mt-2 d-none d-md-inline-block" style="flex:1 1 100px">
                 </div>
 
                 <div class="btn-group mt-2" style="flex:0 0 150px">
                     <button id="edit-mode" class="btn btn-light btn-sm"><i class="fa-solid fa-pencil"></i> Edit</button>
-                    <button id="view-mode" class="btn btn-light btn-sm"><i class="fa-solid fa-tv"></i> View</button>
+                    <button id="play-mode" class="btn btn-light btn-sm"><i class="fa-solid fa-play"></i> Play</button>
                 </div>
 
 
@@ -57,6 +57,7 @@
                 position: relative;
                 z-index: 9;
             }
+
             #background-guide{
                 background: url(guide.png) center center no-repeat;
                 position: fixed;
@@ -64,9 +65,11 @@
                 left:0;
                 width: 100%;
                 height: 100%;
+                background-size: contain;
             }
-            #clientHeight{
-                min-height: 50px;
+            #toolbar{
+                position: relative;
+                z-index: 99;
             }
             
         </style>
@@ -99,7 +102,7 @@
             const canvas = document.getElementById("main-canvas");
             const canvasContext = canvas.getContext('2d');
             const editModeButton = document.getElementById("edit-mode");
-            const viewModeButton = document.getElementById("view-mode");
+            const playModeButton = document.getElementById("play-mode");
             var mode = null;
             var drawIndex = 0;
             var drawInterval = null;
@@ -282,14 +285,14 @@
              * MODES
              * -----------------------
              */
-            function viewMode(cotext, canvas)
+            function playMode(cotext, canvas)
             {
                 // do nothing if mode is already in 'edit' mode
-                if(mode == 'view') return; 
+                if(mode == 'play') return; 
                 // toggle button classes
                 editModeButton.classList.remove("btn-dark");
-                viewModeButton.classList.add("btn-dark");
-                mode = 'view';
+                playModeButton.classList.add("btn-dark");
+                mode = 'play';
 
                 // stop any pending animation
                 if(drawInterval) clearInterval(drawInterval);
@@ -338,7 +341,7 @@
                 if(mode == 'edit') return; 
                 // toggle button classes
                 editModeButton.classList.add("btn-dark");
-                viewModeButton.classList.remove("btn-dark");
+                playModeButton.classList.remove("btn-dark");
                 mode = 'edit';
 
                 // reset offset
@@ -362,8 +365,8 @@
             canvas.height = window.innerHeight - toolbarHeight - (borderWidth*3);
 
             // load from last session - if there's any
-            if(localStorage.getItem('canvas_points')){
-                pointCoordinates = JSON.parse(localStorage.getItem('canvas_points'));
+            if(localStorage.getItem('stored_points')){
+                pointCoordinates = JSON.parse(localStorage.getItem('stored_points'));
             }
 
             // handles load file
@@ -406,15 +409,15 @@
             });
             // store unsaved changes to localStorage
             window.addEventListener('beforeunload', function(event) {
-                localStorage.setItem('canvas_points', JSON.stringify(pointCoordinates));
+                localStorage.setItem('stored_points', JSON.stringify(pointCoordinates));
             });
 
             // mode button clicks
             editModeButton.addEventListener("click", function(event) {
                 editMode(canvasContext, canvas);
             });
-            viewModeButton.addEventListener("click", function(event) {
-                viewMode(canvasContext, canvas);
+            playModeButton.addEventListener("click", function(event) {
+                playMode(canvasContext, canvas);
             });
             
 
