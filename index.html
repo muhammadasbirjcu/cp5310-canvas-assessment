@@ -100,6 +100,7 @@
             var mode = null;
             var drawIndex = 0;
             var drawInterval = null;
+            const animationSpeed = 500;
 
             /**
              * ---------------------------
@@ -182,6 +183,31 @@
                 return pointCoordinates.length > 0 ? 
                     pointCoordinates[pointCoordinates.length - 1] : 
                     null;
+            }
+
+            function getBoundingBox()
+            {
+                var box = {
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                }
+                if(pointCoordinates.length == 0) return box;
+                // initial data
+                box.left = pointCoordinates[0].x;
+                box.right = pointCoordinates[0].x;
+                box.top = pointCoordinates[0].y;
+                box.bottom = pointCoordinates[0].y;
+
+                // iterate through all points and determine the bounding box
+                for(var i in pointCoordinates){
+                    if(pointCoordinates[i].x < box.left) box.left = pointCoordinates[i].x;
+                    if(pointCoordinates[i].x > box.right) box.right = pointCoordinates[i].x;
+                    if(pointCoordinates[i].y < box.top) box.top = pointCoordinates[i].y;
+                    if(pointCoordinates[i].y > box.bottom) box.bottom = pointCoordinates[i].y;
+                }
+                return box;
             }
 
 
@@ -268,12 +294,18 @@
                 // clear canvas
                 clearCanvas(cotext, canvas);
 
+                // stops from going any further because there's no drawing to animate
                 if(pointCoordinates.length == 0) return;
 
-                // start from beginning
+                // determine the initial location of the animation
+                var boundingBox = getBoundingBox();
+                offset.x = -1 * boundingBox.left;
+                offset.y = -1 * (boundingBox.top - 7);
+
+                // start animating from the first dot
                 drawIndex = 0;
                 drawInterval = setInterval(function(){
-                    // start animation
+                    // start draw animation
                     if(drawIndex < pointCoordinates.length){
                         plotCircle(canvasContext, pointCoordinates[drawIndex].x, pointCoordinates[drawIndex].y);
                         if(drawIndex > 0){
@@ -281,10 +313,20 @@
                         }
                         drawIndex++;
                     }else{
-                        drawIndex = 0;
-                        clearCanvas(cotext, canvas);
+                        // we've reached the last dot, 
+                        // start animating the movement of the entire drawing
+                        // by incrementing offset.x
+                        offset.x += 4;
+                        const boundingBox = getBoundingBox();
+                        // check if the rightmost point of the drawing is beyond the canvas width
+                        if((boundingBox.right + offset.x) > canvas.width){
+                            clearInterval(drawInterval)
+                        }else{
+                            clearCanvas(cotext, canvas);
+                            redrawPoints(canvasContext, canvas, pointCoordinates);
+                        }
                     }
-                }, 1000);
+                }, animationSpeed);
             }
 
             function editMode(cotext, canvas)
@@ -295,6 +337,10 @@
                 editModeButton.classList.add("btn-dark");
                 viewModeButton.classList.remove("btn-dark");
                 mode = 'edit';
+
+                // reset offset
+                offset.x = 0;
+                offset.y = 0;
 
                 // stop any pending animation
                 if(drawInterval) clearInterval(drawInterval);
@@ -360,7 +406,7 @@
                 localStorage.setItem('canvas_points', JSON.stringify(pointCoordinates));
             });
 
-            // on clicks in canvas
+            // mode button clicks
             editModeButton.addEventListener("click", function(event) {
                 editMode(canvasContext, canvas);
             });
